@@ -435,6 +435,18 @@
         }
       }
       /* --- CARDS --- */
+
+      #card-container,
+      #search-results-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+
+        align-items: start;
+        min-width: 0;
+
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
       .card-item {
         border: 1px solid var(--border);
         background: rgba(15, 15, 20, 0.6);
@@ -488,17 +500,6 @@
         align-items: center;
       }
 
-      #card-container,
-      #search-results-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-
-        align-items: start;
-        min-width: 0;
-
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      }
       .card-content {
         display: grid;
         grid-template-rows: 0fr; /* Collapsed state */
@@ -1053,6 +1054,7 @@
       #view-desc {
         position: relative; /* Context for the absolute children */
         z-index: 1;
+        margin-top: 1rem;
         overflow: hidden; /* Clips any glowing edges */
       }
 
@@ -1301,7 +1303,11 @@
         font-weight: 600;
         color: rgba(255, 255, 255, 0.5);
         letter-spacing: 1px;
-        padding: 4px 12px;
+        padding: 4px 0px;
+      }
+      .leftB {
+        margin-left: 1rem;
+        padding-left: 2rem;
         border-left: 1px solid rgba(255, 255, 255, 0.1);
       }
 
@@ -1331,6 +1337,7 @@
         max-width: 500px;
         margin: 0 auto 40px auto;
         line-height: 1.6;
+        text-align: center;
       }
 
       /* Subtle glow for the values in the metrics glass */
@@ -1632,16 +1639,19 @@
           <span class="mini-icon">🗂</span>
           <span class="mini-label">Global Search</span>
         </div>
+
         <br />
 
         <div
           class="mini-card"
+          id="nav-pdf"
           onclick="openPDF('./G/Grammar 1.pdf')"
           title="Grammar"
         >
           <span class="mini-icon">G</span>
           <span class="mini-label">Grammar</span>
         </div>
+
         <div class="mini-card" onclick="switchMode('QNA')" title="Q&A">
           <span class="mini-icon">QA</span>
           <span class="mini-label">Questions and Answers</span>
@@ -1670,6 +1680,12 @@
           <div class="pipeline-step">Process</div>
           <div class="arrow">→</div>
           <div class="pipeline-step">Mastery</div>
+          <a href="https://chatgpt.com" class="system-status leftB">GPT</a>
+          <a
+            href="https://dictionary.cambridge.org/dictionary/english/"
+            class="system-status"
+            >dictionary</a
+          >
         </div>
 
         <div class="header-actions">
@@ -1744,11 +1760,19 @@
           <div class="ambient-glow"></div>
 
           <div class="hero-container">
-            <div class="top-meta">
+            <div class="top-meta" style="margin-bottom: 1rem">
               <span class="badge">COGNITIVE INTERFACE v2.0</span>
               <div class="system-status">
                 <span class="status-dot"></span> SYSTEM_ACTIVE
               </div>
+            </div>
+            <div class="top-meta">
+              <a href="https://chatgpt.com" class="system-status">GPT</a>
+              <a
+                href="https://dictionary.cambridge.org/dictionary/english/"
+                class="system-status"
+                >dictionary</a
+              >
             </div>
 
             <h1 class="glitch-title" data-text="NEXUS OBSIDIAN">
@@ -1869,30 +1893,29 @@
               padding: 24px;
               border-radius: 12px;
               backdrop-filter: blur(20px);
-              margin-bottom: 3rem;
-              min-height: 7rem; /* Changed from height to min-height */
+              margin-bottom: 1.5rem;
+              display: flex;
+              flex-direction: column;
+              gap: 24px;
             "
           >
             <div
               style="
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 40px;
-                align-items: center;
+                display: flex;
+                gap: 24px;
+                flex-wrap: wrap;
+                align-items: flex-start;
               "
             >
               <div
-                style="
-                  border-right: 1px solid rgba(255, 255, 255, 0.05);
-                  padding-right: 30px;
-                "
+                style="flex: 1 1 300px; display: flex; flex-direction: column"
               >
                 <label
                   style="
                     font-size: 0.65rem;
                     text-transform: uppercase;
                     letter-spacing: 2px;
-                    opacity: 0.6;
+                    opacity: 0.8;
                     margin-bottom: 12px;
                     display: flex;
                     align-items: center;
@@ -1906,6 +1929,7 @@
                       height: 6px;
                       background: var(--accent, #00d2ff);
                       border-radius: 50%;
+                      box-shadow: 0 0 8px var(--accent);
                     "
                   ></span>
                   01 // Source Archive
@@ -1913,7 +1937,7 @@
 
                 <div
                   class="file-upload-wrapper"
-                  style="position: relative; overflow: hidden"
+                  style="position: relative; height: 54px"
                 >
                   <input
                     type="file"
@@ -1930,35 +1954,39 @@
                   />
                   <div
                     style="
-                      background: rgba(255, 255, 255, 0.03);
+                      height: 100%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      background: rgba(255, 255, 255, 0.02);
                       border: 1px dashed rgba(255, 255, 255, 0.1);
-                      padding: 15px;
                       border-radius: 8px;
-                      text-align: center;
                       transition: 0.3s;
                     "
                     onmouseover="
-                      this.style.borderColor = 'var(--accent, #00d2ff)'
+                      this.style.borderColor = 'var(--accent, #00d2ff)';
+                      this.style.background = 'rgba(0, 210, 255, 0.03)';
                     "
                     onmouseout="
-                      this.style.borderColor = 'rgba(255,255,255,0.1)'
+                      this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                      this.style.background = 'rgba(255, 255, 255, 0.02)';
                     "
                   >
-                    <div style="font-size: 1.2rem; margin-bottom: 5px">📥</div>
-                    <div
+                    <span
                       style="
-                        font-size: 0.7rem;
+                        font-size: 0.75rem;
                         opacity: 0.5;
                         font-family: monospace;
+                        letter-spacing: 1px;
                       "
                     >
-                      Drop JSON or Click
-                    </div>
+                      DROP JSON OR CLICK
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div style="display: flex; flex-grow: 1; flex-direction: column">
                 <label
                   style="
                     font-size: 0.65rem;
@@ -1969,6 +1997,8 @@
                     display: flex;
                     align-items: center;
                     gap: 8px;
+                    flex-grow: 1;
+
                     color: var(--accent, #00d2ff);
                   "
                 >
@@ -1990,6 +2020,7 @@
                     placeholder="Scan neural fragments..."
                     oninput="executeSearch()"
                     style="
+                      margin: 0;
                       background: rgba(0, 0, 0, 0.4);
                       border: 1px solid rgba(255, 255, 255, 0.1);
                       color: white;
@@ -2227,10 +2258,10 @@ Overall, my goal would be to turn that money into something sustainable, not jus
           <span class="expand-icon" style="font-size:0.8rem; color:var(--accent); opacity:0.7;">▽</span>
         </div>
         <div class="card-content">
-          <div style="min-height: 0; padding: 0 20px 20px 20px;"> 
-            <p style="color:var(--text-dim); line-height:1.6; margin:0; white-space: pre-wrap;">${item.def}</p>
+          <div style="min-height: 0;"> 
+            <p style="color:var(--text-dim); line-height:1.6; margin:15px 0; white-space: pre-wrap;">${item.def}</p>
           </div>
-        </div>
+        </div>        
       </div>`;
           })
           .join("");
@@ -2250,12 +2281,6 @@ Overall, my goal would be to turn that money into something sustainable, not jus
 
         // Optional: Switch to view the new item
         switchMode(newItem.status || "new");
-      }
-
-      function openPDF(pdfUrl) {
-        const container = document.getElementById("pdf-container");
-        container.innerHTML = `<embed src="${pdfUrl}" type="application/pdf" width="100%" height="100%" />`;
-        switchMode("pdf");
       }
 
       function nuclearReset() {
@@ -2281,6 +2306,12 @@ Overall, my goal would be to turn that money into something sustainable, not jus
             }, 500);
           }
         }
+      }
+
+      function openPDF(pdfUrl) {
+        const container = document.getElementById("pdf-container");
+        container.innerHTML = `<iframe src="${pdfUrl}" width="100%" height="100%" style="border:none;"></iframe>`;
+        switchMode("pdf");
       }
 
       function switchMode(mode) {
