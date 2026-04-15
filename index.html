@@ -1851,7 +1851,6 @@
           <input
             type="checkbox"
             id="vault-master-switch"
-            checked
             onchange="toggleVaultFeature()"
           />
           <span class="slider"></span>
@@ -1879,19 +1878,6 @@
         </div>
         <div class="nav-card" id="nav-search" onclick="switchMode('search')">
           <span>⌬ Global Search</span>
-        </div>
-        <br />
-
-        <span class="nav-label">Additional Features</span>
-        <div
-          class="nav-card"
-          id="nav-pdf"
-          onclick="openPDF('./G/Grammar 1.pdf')"
-        >
-          <span>Grammar</span>
-        </div>
-        <div class="nav-card" id="nav-QNA" onclick="switchMode('QNA')">
-          <span>Questions and Answers</span>
         </div>
       </div>
 
@@ -1993,25 +1979,6 @@
           <span class="mini-icon">⌬</span>
           <span class="mini-label">Global Search</span>
         </div>
-
-        <br />
-
-        <div
-          class="mini-card"
-          id="nav-pdf"
-          onclick="openPDF('./G/Grammar 1.pdf')"
-          title="Grammar"
-        >
-          <span class="mini-icon">G</span>
-          <span class="mini-label">Grammar</span>
-        </div>
-
-        <div class="mini-card" onclick="switchMode('QNA')" title="Q&A">
-          <span class="mini-icon">QA</span>
-          <span class="mini-label">Questions and Answers</span>
-        </div>
-
-        <br />
 
         <div
           class="mini-card mini-add"
@@ -2547,49 +2514,52 @@ Overall, my goal would be to turn that money into something sustainable, not jus
       let db = [];
       let currentMode = "desc";
 
-      // --- GLOBAL CONFIGURATION (Must be at the top) ---
+      // --- GLOBAL STATE ---
       let vaultIndex = 0;
       let countdownInterval;
-      let vaultTimer; // The 30s delay timer
-      let isVaultReminderActive = true;
+      let vaultTimer;
+      let isVaultReminderActive = true; // Default to ON
 
+      // 1. THE MISSING FUNCTION - This fixes your error
+      function toggleVaultFeature() {
+        const switchEl = document.getElementById("vault-master-switch");
+        if (switchEl) {
+          isVaultReminderActive = switchEl.checked;
+          localStorage.setItem("vault_reminder_enabled", isVaultReminderActive);
+
+          // If turned OFF, hide any open popup immediately
+          if (!isVaultReminderActive) {
+            closeVault();
+            clearTimeout(vaultTimer);
+          } else {
+            // If turned ON, schedule the next reminder
+            clearTimeout(vaultTimer);
+            vaultTimer = setTimeout(showVaultReminder, 30000);
+          }
+          console.log(
+            `Neural Reminders: ${isVaultReminderActive ? "ENGAGED" : "DISENGAGED"}`,
+          );
+        }
+      }
+
+      // 2. CLOSE & DISCHARGE
       function closeVault() {
         const el = document.getElementById("vault-popup");
         const overlay = document.getElementById("focus-overlay");
-
         if (el && overlay) {
           el.classList.remove("show");
           overlay.classList.remove("active");
         }
+        clearInterval(countdownInterval);
 
-        clearInterval(countdownInterval); // Stop the 10s countdown
-
-        // --- THE MANUAL DISCHARGE LOGIC ---
-        // We clear any existing timer and ONLY start the 30s wait
-        // for the NEXT item after the user clicks close.
+        // Only schedule next if active
         clearTimeout(vaultTimer);
         if (isVaultReminderActive) {
           vaultTimer = setTimeout(showVaultReminder, 30000);
         }
       }
-      function moveVault(direction) {
-        const vaultItems = db.filter((item) => item.status === "know");
-        if (vaultItems.length === 0) return;
 
-        // Calculate new index (with wrapping logic)
-        vaultIndex += direction;
-
-        if (vaultIndex >= vaultItems.length) vaultIndex = 0;
-        if (vaultIndex < 0) vaultIndex = vaultItems.length - 1;
-
-        // We call showVaultReminder but we don't increment the index
-        // because we already moved it manually.
-        // To avoid double-incrementing, we temporarily decrement before calling.
-        vaultIndex--;
-        showVaultReminder();
-      }
-
-      // Ensure showVaultReminder handles the "Reset" state for arrows
+      // 3. SHOW REMINDER
       function showVaultReminder() {
         if (!isVaultReminderActive) return;
 
@@ -2600,84 +2570,71 @@ Overall, my goal would be to turn that money into something sustainable, not jus
         }
 
         if (vaultIndex >= vaultItems.length) vaultIndex = 0;
-        if (vaultIndex < 0) vaultIndex = 0;
-
         const item = vaultItems[vaultIndex];
+
         const el = document.getElementById("vault-popup");
         const timerDisplay = document.getElementById("focus-timer");
         const closeBtn = document.querySelector(".close-synapse");
 
-        // Standard UI update...
-        document.getElementById("popup-term").innerText = item.term;
-        document.getElementById("popup-def").innerText = item.def;
-        document.getElementById("vault-index-count").innerText =
-          `[ ${vaultIndex + 1} / ${vaultItems.length} ]`;
+        if (el && timerDisplay && closeBtn) {
+          document.getElementById("popup-term").innerText = item.term;
+          document.getElementById("popup-def").innerText = item.def;
+          document.getElementById("vault-index-count").innerText =
+            `[ ${vaultIndex + 1} / ${vaultItems.length} ]`;
 
-        // RESET LOCK: Every time a new card appears (via arrow or timer)
-        let timeLeft = 10;
-        timerDisplay.innerText = timeLeft;
-        timerDisplay.style.color = "var(--accent)";
-        closeBtn.classList.remove("ready-pulse");
-        closeBtn.style.opacity = "0.1";
-        closeBtn.style.pointerEvents = "none";
-
-        document.getElementById("focus-overlay").classList.add("active");
-        el.classList.add("show");
-
-        clearInterval(countdownInterval);
-        countdownInterval = setInterval(() => {
-          timeLeft--;
+          let timeLeft = 10;
           timerDisplay.innerText = timeLeft;
-          if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            timerDisplay.innerText = "READY";
-            timerDisplay.style.color = "#00ff88";
-            closeBtn.style.opacity = "1";
-            closeBtn.style.pointerEvents = "auto";
-            closeBtn.classList.add("ready-pulse");
-          }
-        }, 1000);
 
-        vaultIndex++;
+          // Lock UI
+          closeBtn.style.opacity = "0.1";
+          closeBtn.style.pointerEvents = "none";
+          closeBtn.classList.remove("ready-pulse");
+
+          document.getElementById("focus-overlay").classList.add("active");
+          el.classList.add("show");
+
+          clearInterval(countdownInterval);
+          countdownInterval = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) {
+              clearInterval(countdownInterval);
+              timerDisplay.innerText = "READY";
+              timerDisplay.style.color = "#00ff88";
+              closeBtn.style.opacity = "1";
+              closeBtn.style.pointerEvents = "auto";
+              closeBtn.classList.add("ready-pulse");
+            }
+          }, 1000);
+          vaultIndex++;
+        }
       }
-      // Start the first cycle when the page loads
+
+      // 4. ARROW NAVIGATION
+      function moveVault(direction) {
+        const vaultItems = db.filter((item) => item.status === "know");
+        if (vaultItems.length === 0) return;
+        vaultIndex += direction;
+        if (vaultIndex >= vaultItems.length) vaultIndex = 0;
+        if (vaultIndex < 0) vaultIndex = vaultItems.length - 1;
+
+        vaultIndex--; // Offset because showVaultReminder increments it
+        showVaultReminder();
+      }
+
+      // 5. INITIALIZATION
       window.addEventListener("DOMContentLoaded", () => {
-        // Check localStorage for preferences
         const savedStatus = localStorage.getItem("vault_reminder_enabled");
         if (savedStatus !== null) {
           isVaultReminderActive = savedStatus === "true";
           const switchEl = document.getElementById("vault-master-switch");
           if (switchEl) switchEl.checked = isVaultReminderActive;
         }
-
-        // Trigger the first reminder after 30 seconds
-        vaultTimer = setTimeout(showVaultReminder, 30000);
+        // Only start if active
+        if (isVaultReminderActive) {
+          vaultTimer = setTimeout(showVaultReminder, 30000);
+        }
       });
-      // Helper to render the Idle State
-      function showIdleState() {
-        const resultsContainer = document.getElementById(
-          "search-results-container",
-        );
-        resultsContainer.innerHTML = `
-    <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 20px; text-align: center;">
-      <div class="neural-scan-container" style="position: relative; margin-bottom: 30px;">
-        <div class="scan-ring"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 15px var(--accent));">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-          <path d="M11 8a3 3 0 0 0-3 3" opacity="0.3"></path>
-        </svg>
-      </div>
-      <div style="max-width: 400px;">
-        <h2 style="letter-spacing: 5px; font-size: 0.8rem; font-weight: 900; color: var(--accent); text-transform: uppercase; margin: 0 0 10px 0; opacity: 0.8;">System Idle</h2>
-        <p style="font-family: monospace; font-size: 0.7rem; color: var(--text-dim); line-height: 1.5; opacity: 0.5;">
-          [ AWAITING_NEURAL_INPUT ]<br>
-          Please enter a query to begin archive cross-referencing.
-        </p>
-      </div>
-    </div>`;
-      }
-
       document.addEventListener("DOMContentLoaded", showIdleState);
       document
         .getElementById("file-selector")
