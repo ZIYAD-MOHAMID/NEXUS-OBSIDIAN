@@ -755,6 +755,7 @@
           padding: 8px 4px !important;
         }
         .hero-actions {
+          margin: 4rem 0 !important;
           gap: 10px !important;
           justify-content: space-around;
         }
@@ -1240,7 +1241,7 @@
         display: flex;
         justify-content: center;
         gap: 20px;
-        margin-top: 30px;
+        margin: 4rem 0 0;
       }
 
       .action-btn {
@@ -1411,6 +1412,26 @@
           background-position: -200% 0;
         }
       }
+
+      @media (max-width: 768px) {
+        .fascinating-pipeline {
+          flex-direction: column; /* Vertical stack */
+          height: auto;
+          padding: 40px 0;
+        }
+
+        .neural-connector {
+          width: 2px;
+          height: 30px; /* Vertical gap */
+          min-width: 2px;
+          margin: 5px 0;
+        }
+
+        .pipeline-node {
+          width: 160px; /* Slightly wider for mobile stability */
+          height: 120px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1524,7 +1545,7 @@
           <span class="count" id="count-know">0</span>
         </div>
         <div class="nav-card" id="nav-search" onclick="switchMode('search')">
-          <span>🗂 Global Search</span>
+          <span>⌬ Global Search</span>
         </div>
         <br />
 
@@ -1551,14 +1572,14 @@
           onclick="exportData()"
           style="flex: 1; font-size: 0.5rem"
         >
-          📥 EXPORT
+          🡅 EXPORT
         </button>
         <button
           class="btn-action"
           onclick="importData()"
           style="flex: 1; font-size: 0.5rem"
         >
-          📤 IMPORT
+          🡇 IMPORT
         </button>
       </div>
     </aside>
@@ -1636,7 +1657,7 @@
           onclick="switchMode('search')"
           title="Global Search"
         >
-          <span class="mini-icon">🗂</span>
+          <span class="mini-icon">⌬</span>
           <span class="mini-label">Global Search</span>
         </div>
 
@@ -1762,11 +1783,11 @@
           <div class="hero-container">
             <div class="top-meta" style="margin-bottom: 1rem">
               <span class="badge">COGNITIVE INTERFACE v2.0</span>
+            </div>
+            <div class="top-meta">
               <div class="system-status">
                 <span class="status-dot"></span> SYSTEM_ACTIVE
               </div>
-            </div>
-            <div class="top-meta">
               <a href="https://chatgpt.com" class="system-status">GPT</a>
               <a
                 href="https://dictionary.cambridge.org/dictionary/english/"
@@ -1841,13 +1862,13 @@
                 onclick="switchMode('search')"
                 data-info="Archive Scan"
               >
-                <div class="node-icon">🗂</div>
+                <div class="node-icon">⌬</div>
                 <div class="node-label">SEARCH</div>
                 <div class="node-status">INDEXED</div>
               </div>
             </div>
 
-            <div class="hero-actions" style="margin-top: 4rem">
+            <div class="hero-actions">
               <button class="action-btn primary" onclick="importData()">
                 INITIALIZE_GENESIS
               </button>
