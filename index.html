@@ -154,7 +154,7 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        margin-bottom: 25px;
+        margin-bottom: 50px;
       }
       .nexus-icon {
         width: 40px;
@@ -211,8 +211,6 @@
       }
 
       .mastery-meter {
-        padding: 20px;
-        border-radius: 15px;
         margin-bottom: 30px;
       }
       .exportAndInport {
@@ -1879,6 +1877,20 @@
         <div class="nav-card" id="nav-search" onclick="switchMode('search')">
           <span>⌬ Global Search</span>
         </div>
+
+        <br />
+
+        <span class="nav-label">Additional Features</span>
+        <div
+          class="nav-card"
+          id="nav-pdf"
+          onclick="openPDF('./G/Grammar 1.pdf')"
+        >
+          <span>Grammar</span>
+        </div>
+        <div class="nav-card" id="nav-QNA" onclick="switchMode('QNA')">
+          <span>Questions and Answers</span>
+        </div>
       </div>
 
       <button class="btn-submit btn-submit1" onclick="switchMode('add')">
@@ -1979,7 +1991,24 @@
           <span class="mini-icon">⌬</span>
           <span class="mini-label">Global Search</span>
         </div>
+        <br />
 
+        <div
+          class="mini-card"
+          id="nav-pdf"
+          onclick="openPDF('./G/Grammar 1.pdf')"
+          title="Grammar"
+        >
+          <span class="mini-icon">G</span>
+          <span class="mini-label">Grammar</span>
+        </div>
+
+        <div class="mini-card" onclick="switchMode('QNA')" title="Q&A">
+          <span class="mini-icon">QA</span>
+          <span class="mini-label">Questions and Answers</span>
+        </div>
+
+        <br />
         <div
           class="mini-card mini-add"
           onclick="switchMode('add')"
